@@ -2,11 +2,8 @@ package com.sorcererxw.intentinterceptor.utils;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.text.format.DateFormat;
-
-import com.sorcererxw.intentinterceptor.BuildConfig;
+import android.util.Log;
 
 import org.apache.commons.io.FileUtils;
 
@@ -16,10 +13,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
-import java.util.TimeZone;
 
 /**
  * @description:
@@ -34,15 +29,17 @@ public class DataUtil {
     private static final String DATA_PATH =
             "/data/data/com.sorcererxw.intentinterceptor/files/intent_data";
 
+    private static final String TAG = "日志";
+
     public static void createFile(Context context) {
-        if (Build.VERSION.SDK_INT >= 24) {
-            return;
-        }
+//        if (Build.VERSION.SDK_INT >= 24) {
+//            return;
+//        }
         File file = new File(DATA_PATH);
         if (!file.exists()) {
             try {
                 FileOutputStream stream =
-                        context.openFileOutput("intent_data", Context.MODE_WORLD_WRITEABLE);
+                        context.openFileOutput("intent_data", Context.MODE_PRIVATE);
                 stream.write(" ".getBytes());
                 stream.close();
             } catch (FileNotFoundException e) {
@@ -68,7 +65,15 @@ public class DataUtil {
     }
 
     public static void write(String s) throws IOException {
-        FileUtils.write(new File(DATA_PATH), s + "\n", "GBK", true);
+        try {
+            FileUtils.write(new File(DATA_PATH), s + "\n", "GBK", true);
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, "write: " + e.getMessage());
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.e(TAG, "write: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public static String parser(Intent intent, int requestCode, Bundle bundle, String from) {

@@ -1,15 +1,14 @@
 package com.sorcererxw.intentinterceptor;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.sorcererxw.intentinterceptor.utils.DataUtil;
 
-import java.io.IOException;
-
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
@@ -28,8 +27,18 @@ public class Xposed implements IXposedHookLoadPackage {
             Intent intent = (Intent) param.args[0];
             int requestCode = (int) param.args[1];
             Bundle bundle = (Bundle) param.args[2];
-            DataUtil.write(DataUtil.parser(intent, requestCode, bundle,
-                    param.thisObject.getClass().getName()));
+            String str = DataUtil.parser(intent, requestCode, bundle,
+                    param.thisObject.getClass().getName());
+            Log.e("日志拦截", str);
+
+            if (true) {
+                Intent intent1 = new Intent();
+                intent1.setAction("GET_INTENT");
+                intent1.putExtra("info", str);
+                ((Context) param.thisObject).sendBroadcast(intent1);
+            } else {
+                DataUtil.write(str);
+            }
         }
 
         @Override

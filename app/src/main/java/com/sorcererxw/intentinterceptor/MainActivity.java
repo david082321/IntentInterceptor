@@ -1,8 +1,7 @@
 package com.sorcererxw.intentinterceptor;
 
-import android.os.Build;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,12 +15,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.sorcererxw.intentinterceptor.models.DataBean;
+import com.sorcererxw.intentinterceptor.receivers.IntentReceiver;
 import com.sorcererxw.intentinterceptor.ui.adapters.DataAdapter;
 import com.sorcererxw.intentinterceptor.utils.DataUtil;
 
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     TextView mHintTextView;
 
     private DataAdapter mDataAdapter;
+    private IntentReceiver myBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,12 +54,19 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mDataAdapter);
         mRecyclerView.setLayoutManager(
                 new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("GET_INTENT");
+        myBroadcastReceiver = new IntentReceiver();
+        registerReceiver(myBroadcastReceiver, intentFilter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (Build.VERSION.SDK_INT >= 24) {
+        if (false) {
+//            if (Build.VERSION.SDK_INT >= 24) {
             mHintTextView.setText(getString(R.string.hint_not_support_nougat));
         } else {
             try {
@@ -106,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void call(List<DataBean> dataBeen) {
                         if (dataBeen.size() == 0) {
-                            mHintTextView.setText(getString(R.string.hint_not_data).replace("|","\n"));
+                            mHintTextView.setText(getString(R.string.hint_not_data).replace("|", "\n"));
                         } else {
                             mHintTextView.setText("");
                         }
@@ -134,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     DataUtil.clear();
                     mDataAdapter.clearData();
-                    mHintTextView.setText(getString(R.string.hint_not_data).replace("|","\n"));
+                    mHintTextView.setText(getString(R.string.hint_not_data).replace("|", "\n"));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
