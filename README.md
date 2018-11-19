@@ -4,3 +4,5 @@ Intercepting android intents with Xposed.
 fork过来取消了Android版本限制，修复了不能写入数据的bug。
 
 fork後，加上繁體中文
+在此下載
+https://github.com/david082321/IntentInterceptor/releases
